@@ -1,5 +1,6 @@
 // Shapes rendering helpers
 import { getSmoothedPath } from "./smoothing.js";
+import { getShapeBounds } from "./bounds.js";
 
 /**
  * Shape data object ko HTML5 Canvas context par render karne ke liye helper function
@@ -107,6 +108,47 @@ export function renderShape(ctx, shape) {
 
     default:
       console.warn(`Unsupported shape type encountered: ${shape.type}`);
+  }
+
+  ctx.restore();
+}
+
+/**
+ * Selected shape ke charo taraf dashed bounding box aur 4 corner resize handles draw karne ke liye
+ * @param {CanvasRenderingContext2D} ctx 
+ * @param {object} shape 
+ */
+export function renderSelectionOverlay(ctx, shape) {
+  const bounds = getShapeBounds(shape);
+  if (!bounds) return;
+
+  ctx.save();
+
+  // Dashed outline box styling
+  ctx.strokeStyle = "#4a90d9"; // standard blue color
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
+
+  // Resize corner handles (8x8px square centered at corners)
+  const handleSize = 8;
+  const half = handleSize / 2;
+  
+  const corners = [
+    { x: bounds.x, y: bounds.y }, // top-left
+    { x: bounds.x + bounds.width, y: bounds.y }, // top-right
+    { x: bounds.x, y: bounds.y + bounds.height }, // bottom-left
+    { x: bounds.x + bounds.width, y: bounds.y + bounds.height } // bottom-right
+  ];
+
+  ctx.setLineDash([]); // disable dash for handles
+  ctx.fillStyle = "#ffffff";
+  ctx.strokeStyle = "#4a90d9";
+  ctx.lineWidth = 1.5;
+
+  for (const corner of corners) {
+    ctx.fillRect(corner.x - half, corner.y - half, handleSize, handleSize);
+    ctx.strokeRect(corner.x - half, corner.y - half, handleSize, handleSize);
   }
 
   ctx.restore();

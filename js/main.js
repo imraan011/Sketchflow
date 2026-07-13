@@ -3,6 +3,8 @@ import { initCanvas, resizeCanvas, requestRender } from "./core/canvas.js";
 import { ToolManager } from "./tools/ToolManager.js";
 import { createShapeTool } from "./tools/shapeTool.js";
 import { pencilTool } from "./tools/pencilTool.js";
+import { selectTool } from "./tools/selectTool.js";
+import { initKeyboard } from "./core/keyboard.js";
 
 // Initialize canvas flow
 const canvasElement = document.getElementById("app-canvas");
@@ -18,19 +20,15 @@ ToolManager.registerTool(createShapeTool("ellipse"));
 ToolManager.registerTool(createShapeTool("line"));
 ToolManager.registerTool(createShapeTool("arrow"));
 ToolManager.registerTool(pencilTool);
-
-// Phase 2 dummy select tool placeholder register karo
-ToolManager.registerTool({
-  name: "select",
-  onPointerDown: () => {},
-  onPointerMove: () => {},
-  onPointerUp: () => {}
-});
+ToolManager.registerTool(selectTool);
 
 // Canvas pointer handlers hook/initialize karein
 if (canvasElement) {
   ToolManager.init(canvasElement);
 }
+
+// Keyboard keypress bindings bind karein
+initKeyboard();
 
 // Toolbar active highlights refresh handler
 function updateToolbarUI() {

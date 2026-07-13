@@ -1,5 +1,5 @@
 import { state } from "./state.js";
-import { renderShape } from "../shapes/renderShape.js";
+import { renderShape, renderSelectionOverlay } from "../shapes/renderShape.js";
 
 // Canvas aur context references store karne ke liye
 let canvas = null;
@@ -98,6 +98,13 @@ export function render() {
   // state me module dynamic shapes looping se draw karo
   state.shapes.forEach(shape => {
     renderShape(ctx, shape);
+  });
+
+  // Selected shapes overlays ko topmost layer par draw karein
+  state.shapes.forEach(shape => {
+    if (state.selectedShapeIds.includes(shape.id)) {
+      renderSelectionOverlay(ctx, shape);
+    }
   });
 
   ctx.restore();

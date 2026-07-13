@@ -14,11 +14,17 @@ export const state = {
     this.notify();
   },
 
-  // Shape details update karne ke liye
+  // Shape details update karne ke liye (immutable recreation to avoid cache bugs)
   updateShape(id, changes) {
-    const shape = this.shapes.find(s => s.id === id);
-    if (shape) {
-      Object.assign(shape, changes);
+    let updated = false;
+    this.shapes = this.shapes.map(s => {
+      if (s.id === id) {
+        updated = true;
+        return { ...s, ...changes };
+      }
+      return s;
+    });
+    if (updated) {
       this.notify();
     }
   },
@@ -32,6 +38,22 @@ export const state = {
   // Active drawing tool change karne ke liye
   setTool(toolName) {
     this.setState({ currentTool: toolName });
+  },
+
+  // Selected shapes select change karne ke liye
+  setSelection(ids) {
+    this.setState({ selectedShapeIds: ids });
+  },
+
+  // Selected shapes delete karne ke liye
+  deleteSelected() {
+    this.shapes = this.shapes.filter(s => !this.selectedShapeIds.includes(s.id));
+    this.setState({ selectedShapeIds: [] });
+  },
+
+  // Viewport scale & panning position shift change karne ke liye
+  setViewport(changes) {
+    this.setState({ viewport: changes });
   },
 
   /**
