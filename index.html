@@ -1,90 +1,250 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Sketchflow - A beautiful browser-based drawing board built from scratch.">
-  <title>Sketchflow — Infinite Canvas</title>
-  <link rel="stylesheet" href="./styles/main.css">
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta name="description" content="Sketchflow - A fast, beautiful, browser-based infinite canvas drawing tool built with vanilla JavaScript.">
+  <title>Sketchflow | Drawing at the Speed of Thought</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Outfit:wght@400;500;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-container": "#00422b",
+            "on-surface-variant": "#bbcabf",
+            "primary": "#4edea3",
+            "surface-container": "#201f1f",
+            "on-secondary-fixed": "#001c37",
+            "tertiary-container": "#95a4b9",
+            "secondary-fixed-dim": "#a0caff",
+            "surface-dim": "#131313",
+            "primary-fixed": "#6ffbbe",
+            "on-surface": "#e5e2e1",
+            "error": "#ffb4ab",
+            "primary-fixed-dim": "#4edea3",
+            "on-error-container": "#ffdad6",
+            "error-container": "#93000a",
+            "tertiary": "#b9c8de",
+            "outline-variant": "#3c4a42",
+            "surface-variant": "#353534",
+            "on-secondary-fixed-variant": "#00497e",
+            "tertiary-fixed": "#d4e4fa",
+            "surface-container-lowest": "#0e0e0e",
+            "on-secondary": "#003259",
+            "surface-container-highest": "#353534",
+            "surface": "#131313",
+            "outline": "#86948a",
+            "on-primary": "#003824",
+            "on-tertiary-fixed": "#0d1c2d",
+            "primary-container": "#10b981",
+            "on-tertiary-container": "#2c3a4c",
+            "inverse-surface": "#e5e2e1",
+            "surface-tint": "#4edea3",
+            "surface-container-high": "#2a2a2a",
+            "surface-bright": "#3a3939",
+            "on-secondary-container": "#c7deff",
+            "secondary-container": "#0063a9",
+            "background": "#131313",
+            "inverse-primary": "#006c49",
+            "inverse-on-surface": "#313030",
+            "on-tertiary-fixed-variant": "#39485a",
+            "on-error": "#690005",
+            "tertiary-fixed-dim": "#b9c8de",
+            "secondary": "#a0caff",
+            "on-primary-fixed-variant": "#005236",
+            "on-tertiary": "#233143",
+            "surface-container-low": "#1c1b1b",
+            "on-background": "#e5e2e1",
+            "on-primary-fixed": "#002113",
+            "secondary-fixed": "#d2e4ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "unit": "4px",
+            "modal-padding": "28px",
+            "toolbar-gap": "6px",
+            "edge-margin-mobile": "16px",
+            "edge-margin-desktop": "20px",
+            "container-padding": "12px"
+          },
+          "fontFamily": {
+            "label-caps": ["Inter", "sans-serif"],
+            "display-logo": ["Outfit", "sans-serif"],
+            "body-base": ["Inter", "sans-serif"],
+            "heading-md": ["Outfit", "sans-serif"]
+          },
+          "fontSize": {
+            "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+            "display-logo": ["16px", { "lineHeight": "20px", "letterSpacing": "-0.5px", "fontWeight": "700" }],
+            "body-base": ["13px", { "lineHeight": "18px", "fontWeight": "600" }],
+            "heading-md": ["14px", { "lineHeight": "21px", "fontWeight": "500" }]
+          }
+        },
+      },
+    }
+  </script>
 </head>
-<body>
-  <!-- Branding header -->
-  <header id="app-header">
-    <div class="logo-container">
-      <span class="logo-icon">✎</span>
-      <h1 class="logo-text">Sketchflow</h1>
+<body class="dark selection:bg-primary/30 selection:text-primary">
+
+  <!-- Top Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 flex items-center px-6 py-3 gap-8 bg-surface-container/75 backdrop-blur-xl rounded-full mt-spacing-edge-margin-desktop mx-auto max-w-fit border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-transform active:scale-95">
+    <div class="font-display-logo text-display-logo text-primary animate-pulse">Sketchflow</div>
+    <div class="hidden md:flex gap-6">
+      <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-base text-body-base hover:bg-white/10 hover:scale-105 transition-all duration-200" href="#features-section">Features</a>
+      <a class="text-on-surface-variant font-body-base text-body-base hover:bg-white/10 hover:scale-105 transition-all duration-200" href="https://github.com/imraan011/Excali-Draw" target="_blank" rel="noopener">GitHub</a>
+      <a class="text-on-surface-variant font-body-base text-body-base hover:bg-white/10 hover:scale-105 transition-all duration-200" href="./app/">Open Canvas</a>
     </div>
-  </header>
+    <div class="flex gap-4 items-center">
+      <a href="./app/" class="bg-primary-container text-on-primary-container px-4 py-2 rounded-full font-body-base text-body-base font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+        Launch App
+      </a>
+    </div>
+  </nav>
 
-  <!-- Full-screen canvas -->
-  <canvas id="app-canvas"></canvas>
+  <!-- Main Content Canvas -->
+  <main class="relative min-h-screen pt-32 pb-40 overflow-hidden">
+    
+    <!-- Hero Section -->
+    <section class="relative z-10 container mx-auto px-6 text-center mb-24">
+      <div class="hero-gradient absolute inset-0 -z-10 pointer-events-none"></div>
+      <h1 class="font-display-logo text-6xl md:text-8xl font-extrabold tracking-tighter mb-6">
+        Sketchflow: <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Drawing at the Speed of Thought</span>
+      </h1>
+      <p class="text-on-surface-variant text-xl md:text-2xl font-heading-md max-w-2xl mx-auto mb-10 leading-relaxed">
+        The zero-dependency infinite canvas for creators. High-performance visualization for your next breakthrough.
+      </p>
+      <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+        <a href="./app/" class="bg-primary text-on-primary px-10 py-5 rounded-xl font-bold text-lg hover:scale-105 transition-all duration-300 glow-primary active:scale-95 flex items-center gap-2 group justify-center w-full md:w-auto">
+          Start Drawing 
+          <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </a>
+        <a href="#demo-section" class="glass px-10 py-5 rounded-xl font-bold text-lg hover:bg-white/5 transition-all duration-300 active:scale-95 border border-white/10 flex items-center justify-center w-full md:w-auto">
+          View Demo
+        </a>
+      </div>
+    </section>
 
-  <!-- Drawing tools toolbar (center, top) — icon-only -->
-  <div id="toolbar" role="toolbar" aria-label="Drawing Tools">
-    <button data-tool="select" class="active" data-tooltip="Select (V or 1)">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="m13 13 6 6"/></svg>
-    </button>
-    <button data-tool="hand" data-tooltip="Hand (H or Space)">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8l-1-1a2 2 0 0 0-3 3l4 4a6 6 0 0 0 6 0l1-1a6 6 0 0 0 1-3.5V11a2 2 0 0 0-2-2z"/></svg>
-    </button>
-    <span class="toolbar-separator"></span>
-    <button data-tool="rectangle" data-tooltip="Rectangle (R or 2)">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
-    </button>
-    <button data-tool="ellipse" data-tooltip="Ellipse (O or 3)">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="10" ry="7"/></svg>
-    </button>
-    <button data-tool="line" data-tooltip="Line (L or 4)">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="19" x2="19" y2="5"/></svg>
-    </button>
-    <button data-tool="arrow" data-tooltip="Arrow (A or 5)">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="8 5 19 5 19 16"/></svg>
-    </button>
-    <span class="toolbar-separator"></span>
-    <button data-tool="pencil" data-tooltip="Pencil (P or 6)">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-    </button>
-    <button data-tool="eraser" data-tooltip="Eraser">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l10-10 7 7-2.5 2.5"/><path d="M6 11l7 7"/></svg>
-    </button>
-    <span class="toolbar-separator"></span>
-    <button id="undo-btn" data-tooltip="Undo (Ctrl+Z)" disabled>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
-    </button>
-    <button id="redo-btn" data-tooltip="Redo (Ctrl+Y or Ctrl+Shift+Z)" disabled>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg>
-    </button>
-  </div>
+    <!-- Canvas Preview Area -->
+    <section id="demo-section" class="relative container mx-auto px-spacing-edge-margin-desktop mb-32">
+      <div class="glass w-full aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl relative border border-white/5">
+        <!-- Canvas Grid -->
+        <div class="canvas-grid absolute inset-0 opacity-40"></div>
+        
+        <!-- Live Rendering Canvas -->
+        <div class="absolute inset-0 p-8 md:p-12">
+          <canvas id="demo-canvas" class="w-full h-full block"></canvas>
+        </div>
 
-  <!-- Action bar (bottom-left): file operations -->
-  <div id="action-bar" role="toolbar" aria-label="File Actions">
-    <button id="import-btn" data-tooltip="Import (.json)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-    </button>
-    <button id="export-btn" data-tooltip="Export project (.json)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    </button>
-    <button id="export-png-btn" data-tooltip="Export image (.png)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-    </button>
-    <span class="toolbar-separator"></span>
-    <button id="reset-btn" data-tooltip="Reset canvas" class="danger-btn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-    </button>
-  </div>
+        <!-- Floating Toolbars in Preview -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 p-2 glass rounded-2xl shadow-2xl scale-110">
+          <div class="bg-primary/15 text-primary rounded-lg p-2 scale-110 shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer transition-all hover:scale-125">
+            <span class="material-symbols-outlined">near_me</span>
+          </div>
+          <div class="text-on-surface-variant p-2 cursor-pointer hover:bg-white/10 hover:-translate-y-2 rounded-lg transition-all">
+            <span class="material-symbols-outlined">draw</span>
+          </div>
+          <div class="text-on-surface-variant p-2 cursor-pointer hover:bg-white/10 hover:-translate-y-2 rounded-lg transition-all">
+            <span class="material-symbols-outlined">pentagon</span>
+          </div>
+          <div class="text-on-surface-variant p-2 cursor-pointer hover:bg-white/10 hover:-translate-y-2 rounded-lg transition-all">
+            <span class="material-symbols-outlined">title</span>
+          </div>
+          <div class="text-on-surface-variant p-2 cursor-pointer hover:bg-white/10 hover:-translate-y-2 rounded-lg transition-all">
+            <span class="material-symbols-outlined">image</span>
+          </div>
+          <div class="w-px h-6 bg-white/10 my-auto mx-1"></div>
+          <div class="text-on-surface-variant p-2 cursor-pointer hover:bg-white/10 hover:-translate-y-2 rounded-lg transition-all">
+            <span class="material-symbols-outlined">settings</span>
+          </div>
+        </div>
 
-  <!-- Zoom controls (bottom-right) -->
-  <div id="zoom-controls">
-    <button id="zoom-reset-btn" title="Reset Zoom (Ctrl+0)">100%</button>
-  </div>
+        <!-- Live Indicator -->
+        <div class="absolute top-6 left-6 flex items-center gap-2 glass px-3 py-1.5 rounded-full">
+          <span class="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,1)]"></span>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Live Demo</span>
+        </div>
+      </div>
+    </section>
 
-  <!-- Autosave status indicator (top-right) -->
-  <div id="status-indicator">Saved</div>
+    <!-- Features Grid -->
+    <section id="features-section" class="container mx-auto px-6 mb-32">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Feature 1 -->
+        <div class="glass p-8 rounded-3xl hover:border-primary/50 transition-all duration-500 group">
+          <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 border border-primary/20 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-primary text-3xl">all_out</span>
+          </div>
+          <h3 class="font-heading-md text-xl font-bold mb-3">Infinite Canvas</h3>
+          <p class="text-on-surface-variant font-body-base text-body-base leading-relaxed">
+            Break free from standard page limits. Sketch, flow, and ideate in a workspace that grows with your vision.
+          </p>
+        </div>
 
-  <!-- Hidden file input for JSON import -->
-  <input type="file" id="import-file-input" accept=".json" style="display: none;">
+        <!-- Feature 2 -->
+        <div class="glass p-8 rounded-3xl hover:border-primary/50 transition-all duration-500 group">
+          <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 border border-primary/20 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-primary text-3xl">code_off</span>
+          </div>
+          <h3 class="font-heading-md text-xl font-bold mb-3">Zero Dependencies</h3>
+          <p class="text-on-surface-variant font-body-base text-body-base leading-relaxed">
+            Pure performance. A lightweight architecture that runs everywhere without the bloat. Focus on your work, not the setup.
+          </p>
+        </div>
 
-  <!-- ES Module entry point -->
-  <script type="module" src="./js/main.js"></script>
+        <!-- Feature 3 -->
+        <div class="glass p-8 rounded-3xl hover:border-primary/50 transition-all duration-500 group">
+          <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 border border-primary/20 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-primary text-3xl">cloud_done</span>
+          </div>
+          <h3 class="font-heading-md text-xl font-bold mb-3">Autosave &amp; Export</h3>
+          <p class="text-on-surface-variant font-body-base text-body-base leading-relaxed">
+            Never lose a stroke. Real-time synchronization combined with professional JSON, transparent PNG exports, and localStorage autosave.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="container mx-auto px-6 mb-32">
+      <div class="glass relative overflow-hidden p-12 md:p-24 rounded-3xl text-center border border-white/10 shadow-[0_0_100px_rgba(16,185,129,0.1)]">
+        <div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none"></div>
+        <h2 class="font-display-logo text-4xl md:text-5xl font-bold mb-8">Ready to visualize your next big idea?</h2>
+        <div class="flex justify-center">
+          <a href="./app/" class="bg-primary-container text-on-primary-container px-12 py-5 rounded-xl font-bold text-xl hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(16,185,129,0.3)] active:scale-95 inline-block">
+            Try Sketchflow Free
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Site Footer Information -->
+  <footer class="w-full py-12 bg-surface-container-lowest border-t border-outline-variant mt-auto">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="font-display-logo text-display-logo text-on-surface">Sketchflow</div>
+      <div class="text-on-surface-variant font-label-caps text-label-caps text-center md:text-left">
+        © 2024 Sketchflow. Built for the infinite.
+      </div>
+      <div class="flex gap-6">
+        <a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="https://github.com/imraan011/Excali-Draw" target="_blank" rel="noopener">GitHub</a>
+        <a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="#">Documentation</a>
+        <a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="#">Changelog</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Landing script loading -->
+  <script type="module" src="./js/landing.js"></script>
 </body>
 </html>
