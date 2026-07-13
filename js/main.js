@@ -5,6 +5,7 @@ import { createShapeTool } from "./tools/shapeTool.js";
 import { pencilTool } from "./tools/pencilTool.js";
 import { selectTool } from "./tools/selectTool.js";
 import { initKeyboard } from "./core/keyboard.js";
+import { initZoom } from "./tools/zoomHandler.js";
 
 // Initialize canvas flow
 const canvasElement = document.getElementById("app-canvas");
@@ -30,6 +31,19 @@ if (canvasElement) {
 // Keyboard keypress bindings bind karein
 initKeyboard();
 
+// Zoom handlers scroll mouse listeners link settings
+if (canvasElement) {
+  initZoom(canvasElement);
+}
+
+// Zoom percentage display click reset actions connection
+const zoomResetBtn = document.getElementById("zoom-reset-btn");
+if (zoomResetBtn) {
+  zoomResetBtn.addEventListener("click", () => {
+    state.setViewport({ x: 0, y: 0, zoom: 1 });
+  });
+}
+
 // Toolbar active highlights refresh handler
 function updateToolbarUI() {
   const buttons = document.querySelectorAll("#toolbar button");
@@ -50,10 +64,20 @@ document.querySelectorAll("#toolbar button").forEach(button => {
   });
 });
 
+// Zoom indicator UI refresh text helper
+function updateZoomUI() {
+  const zoomBtn = document.getElementById("zoom-reset-btn");
+  if (zoomBtn) {
+    const percentage = Math.round(state.viewport.zoom * 100);
+    zoomBtn.textContent = `${percentage}%`;
+  }
+}
+
 // State changes ko subscribe karo update re-rendering aur UI sync ke liye
 state.subscribe(() => {
   requestRender();
   updateToolbarUI();
+  updateZoomUI();
 });
 
 // Window resize handler updates grid dynamic mapping
@@ -64,6 +88,7 @@ window.addEventListener("resize", () => {
 
 // Initial rendering cycle trigger aur UI refresh check
 updateToolbarUI();
+updateZoomUI();
 requestRender();
 
 console.log("Excali Draw initialized");

@@ -1,7 +1,12 @@
 import { state } from "../core/state.js";
+import { panTool } from "./panTool.js";
+import { getIsSpacePressed } from "../core/keyboard.js";
 
 // Sabhi registered tools list register karne ke liye storage
 const tools = {};
+
+// Active override tool instance (panning priority logic support)
+let activeOverrideTool = null;
 
 export const ToolManager = {
   /**
@@ -24,25 +29,50 @@ export const ToolManager = {
       return;
     }
 
+    // Middle-click autoscroll behavior block/prevent settings
+    canvasElement.addEventListener("mousedown", (e) => {
+      if (e.button === 1) {
+        e.preventDefault();
+      }
+    });
+
     // Pointer events bind kar rahe hain ek bar context capture ke liye
     canvasElement.addEventListener("pointerdown", (e) => {
-      const activeTool = tools[state.currentTool];
-      if (activeTool && typeof activeTool.onPointerDown === "function") {
-        activeTool.onPointerDown(e);
+      const isMiddleButton = e.button === 1;
+
+      // Space key held ho ya middle-click scroll ho to panTool trigger intercept karein
+      if (getIsSpacePressed() || isMiddleButton) {
+        activeOverrideTool = panTool;
+        panTool.onPointerDown(e);
+      } else {
+        activeOverrideTool = null;
+        const activeTool = tools[state.currentTool];
+        if (activeTool && typeof activeTool.onPointerDown === "function") {
+          activeTool.onPointerDown(e);
+        }
       }
     });
 
     canvasElement.addEventListener("pointermove", (e) => {
-      const activeTool = tools[state.currentTool];
-      if (activeTool && typeof activeTool.onPointerMove === "function") {
-        activeTool.onPointerMove(e);
+      if (activeOverrideTool) {
+        activeOverrideTool.onPointerMove(e);
+      } else {
+        const activeTool = tools[state.currentTool];
+        if (activeTool && typeof activeTool.onPointerMove === "function") {
+          activeTool.onPointerMove(e);
+        }
       }
     });
 
     canvasElement.addEventListener("pointerup", (e) => {
-      const activeTool = tools[state.currentTool];
-      if (activeTool && typeof activeTool.onPointerUp === "function") {
-        activeTool.onPointerUp(e);
+      if (activeOverrideTool) {
+        activeOverrideTool.onPointerUp(e);
+        activeOverrideTool = null;
+      } else {
+        const activeTool = tools[state.currentTool];
+        if (activeTool && typeof activeTool.onPointerUp === "function") {
+          activeTool.onPointerUp(e);
+        }
       }
     });
   }
