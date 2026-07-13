@@ -56,6 +56,16 @@ export const state = {
     this.setState({ viewport: changes });
   },
 
+  // Purane state configurations load karke single notify check generate karne ke liye
+  loadState(data) {
+    this.shapes = data.shapes || [];
+    this.selectedShapeIds = [];
+    if (data.viewport) {
+      this.viewport = { ...this.viewport, ...data.viewport };
+    }
+    this.notify();
+  },
+
   /**
    * State ko update karne aur sabhi subscribers ko notify karne ke liye
    * @param {Partial<typeof state>} nextState 

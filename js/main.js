@@ -6,6 +6,15 @@ import { pencilTool } from "./tools/pencilTool.js";
 import { selectTool } from "./tools/selectTool.js";
 import { initKeyboard } from "./core/keyboard.js";
 import { initZoom } from "./tools/zoomHandler.js";
+import { loadFromLocalStorage } from "./persistence/localStorage.js";
+import { initAutosave } from "./persistence/autosave.js";
+import { exportAsJSON, importFromJSON } from "./persistence/exportImport.js";
+
+// LocalStorage startup initialization load
+const loadedState = loadFromLocalStorage();
+if (loadedState) {
+  state.loadState(loadedState);
+}
 
 // Initialize canvas flow
 const canvasElement = document.getElementById("app-canvas");
@@ -57,7 +66,7 @@ function updateToolbarUI() {
 }
 
 // Toolbar buttons par click events click and update setup
-document.querySelectorAll("#toolbar button").forEach(button => {
+document.querySelectorAll("#toolbar button[data-tool]").forEach(button => {
   button.addEventListener("click", () => {
     const selectedTool = button.dataset.tool;
     state.setTool(selectedTool);
@@ -78,6 +87,60 @@ state.subscribe(() => {
   requestRender();
   updateToolbarUI();
   updateZoomUI();
+});
+
+// Autosave system initialize
+initAutosave();
+
+// Custom event for autosave completed feedback
+window.addEventListener("excaliclone-saved", () => {
+  const indicator = document.getElementById("status-indicator");
+  if (indicator) {
+    indicator.classList.add("show");
+    setTimeout(() => {
+      indicator.classList.remove("show");
+    }, 1500);
+  }
+});
+
+// Export control buttons click listener
+const exportBtn = document.getElementById("export-btn");
+if (exportBtn) {
+  exportBtn.addEventListener("click", () => {
+    exportAsJSON();
+  });
+}
+
+// Import control buttons click listener triggers hidden input file chooser
+const importBtn = document.getElementById("import-btn");
+const importFileInput = document.getElementById("import-file-input");
+if (importBtn && importFileInput) {
+  importBtn.addEventListener("click", () => {
+    importFileInput.click();
+  });
+
+  importFileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      importFromJSON(file);
+      // Reset input value to allow importing the same file again if desired
+      importFileInput.value = "";
+    }
+  });
+}
+
+// Drag & drop support direct imports onto canvas workspace
+window.addEventListener("dragover", (e) => {
+  e.preventDefault();
+});
+window.addEventListener("drop", (e) => {
+  e.preventDefault();
+  if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith(".json")) {
+      importFromJSON(file);
+    }
+  }
 });
 
 // Window resize handler updates grid dynamic mapping
