@@ -11,6 +11,7 @@ import { initZoom } from "./tools/zoomHandler.js";
 import { loadFromLocalStorage } from "./persistence/localStorage.js";
 import { initAutosave } from "./persistence/autosave.js";
 import { exportAsJSON, importFromJSON } from "./persistence/exportImport.js";
+import { exportAsPNG } from "./persistence/exportPNG.js";
 import { showConfirm } from "./ui/modal.js";
 
 // LocalStorage startup initialization load
@@ -124,11 +125,26 @@ window.addEventListener("excaliclone-saved", () => {
   }
 });
 
-// Export control buttons click listener
+// Export JSON control button click listener
 const exportBtn = document.getElementById("export-btn");
 if (exportBtn) {
   exportBtn.addEventListener("click", () => {
     exportAsJSON();
+  });
+}
+
+// Export PNG button — opacity dim during async toBlob, never touch innerHTML
+const exportPngBtn = document.getElementById("export-png-btn");
+if (exportPngBtn) {
+  exportPngBtn.addEventListener("click", () => {
+    exportPngBtn.style.opacity = "0.45";
+    exportPngBtn.disabled = true;
+
+    setTimeout(() => {
+      exportAsPNG();
+      exportPngBtn.style.opacity = "";
+      exportPngBtn.disabled = false;
+    }, 50);
   });
 }
 
