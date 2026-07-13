@@ -1,0 +1,71 @@
+/* entry-animation.css — CSS overrides applied only when the page is actively animating on entry */
+
+/* Initial hidden states under js-animating body class to prevent flash of content */
+body.js-animating {
+  overflow: hidden !important;
+}
+
+body.js-animating [data-animate="heading"] .letter {
+  opacity: 0;
+  display: inline-block;
+  transform: scale(0.8);
+}
+
+body.js-animating [data-animate="cta"] {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+body.js-animating [data-animate="drop-in"] {
+  opacity: 0;
+  transform: translateY(-40px);
+}
+
+body.js-animating [data-animate="fade-up"] {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Dynamically injected drawing overlay styles */
+.sketch-overlay-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  overflow: visible;
+}
+
+.sketch-pencil-tip {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #4edea3;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 6;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  box-shadow: 0 0 8px #4edea3;
+}
+
+/* Skip button styling */
+.animation-skip-link {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  z-index: 100;
+  transition: color 0.15s ease;
+}
+
+.animation-skip-link:hover {
+  color: #ffffff;
+}

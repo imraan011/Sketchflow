@@ -3,248 +3,184 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <meta name="description" content="Sketchflow - A fast, beautiful, browser-based infinite canvas drawing tool built with vanilla JavaScript.">
-  <title>Sketchflow | Drawing at the Speed of Thought</title>
+  <meta name="description" content="Sketchflow - A minimal browser-based infinite canvas drawing tool built with vanilla JavaScript.">
+  <title>Sketchflow | Infinite Canvas Whiteboard</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Outfit:wght@400;500;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Outfit:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="./styles/landing.css">
+
+  <!-- Entry animation (optional — safe to remove this line + the animations/ folder) -->
+  <link rel="stylesheet" href="./animations/entry-animation.css">
+  
+  <!-- GSAP Library from CDN (belonging to the optional animation block) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
+
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
       theme: {
         extend: {
           "colors": {
-            "on-primary-container": "#00422b",
-            "on-surface-variant": "#bbcabf",
             "primary": "#4edea3",
-            "surface-container": "#201f1f",
-            "on-secondary-fixed": "#001c37",
-            "tertiary-container": "#95a4b9",
-            "secondary-fixed-dim": "#a0caff",
-            "surface-dim": "#131313",
-            "primary-fixed": "#6ffbbe",
-            "on-surface": "#e5e2e1",
-            "error": "#ffb4ab",
-            "primary-fixed-dim": "#4edea3",
-            "on-error-container": "#ffdad6",
-            "error-container": "#93000a",
-            "tertiary": "#b9c8de",
-            "outline-variant": "#3c4a42",
-            "surface-variant": "#353534",
-            "on-secondary-fixed-variant": "#00497e",
-            "tertiary-fixed": "#d4e4fa",
-            "surface-container-lowest": "#0e0e0e",
-            "on-secondary": "#003259",
-            "surface-container-highest": "#353534",
-            "surface": "#131313",
-            "outline": "#86948a",
-            "on-primary": "#003824",
-            "on-tertiary-fixed": "#0d1c2d",
+            "surface-container": "#18181b",
+            "surface-dim": "#0a0a0a",
+            "on-surface": "#f4f4f5",
             "primary-container": "#10b981",
-            "on-tertiary-container": "#2c3a4c",
-            "inverse-surface": "#e5e2e1",
-            "surface-tint": "#4edea3",
-            "surface-container-high": "#2a2a2a",
-            "surface-bright": "#3a3939",
-            "on-secondary-container": "#c7deff",
-            "secondary-container": "#0063a9",
-            "background": "#131313",
-            "inverse-primary": "#006c49",
-            "inverse-on-surface": "#313030",
-            "on-tertiary-fixed-variant": "#39485a",
-            "on-error": "#690005",
-            "tertiary-fixed-dim": "#b9c8de",
-            "secondary": "#a0caff",
-            "on-primary-fixed-variant": "#005236",
-            "on-tertiary": "#233143",
-            "surface-container-low": "#1c1b1b",
-            "on-background": "#e5e2e1",
-            "on-primary-fixed": "#002113",
-            "secondary-fixed": "#d2e4ff"
+            "background": "#0a0a0a"
           },
           "borderRadius": {
             "DEFAULT": "0.25rem",
             "lg": "0.5rem",
             "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.5rem",
             "full": "9999px"
-          },
-          "spacing": {
-            "unit": "4px",
-            "modal-padding": "28px",
-            "toolbar-gap": "6px",
-            "edge-margin-mobile": "16px",
-            "edge-margin-desktop": "20px",
-            "container-padding": "12px"
-          },
-          "fontFamily": {
-            "label-caps": ["Inter", "sans-serif"],
-            "display-logo": ["Outfit", "sans-serif"],
-            "body-base": ["Inter", "sans-serif"],
-            "heading-md": ["Outfit", "sans-serif"]
-          },
-          "fontSize": {
-            "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
-            "display-logo": ["16px", { "lineHeight": "20px", "letterSpacing": "-0.5px", "fontWeight": "700" }],
-            "body-base": ["13px", { "lineHeight": "18px", "fontWeight": "600" }],
-            "heading-md": ["14px", { "lineHeight": "21px", "fontWeight": "500" }]
           }
-        },
-      },
+        }
+      }
     }
   </script>
 </head>
-<body class="dark selection:bg-primary/30 selection:text-primary">
+<body class="bg-background text-on-surface antialiased selection:bg-primary/20 selection:text-primary">
 
-  <!-- Top Navigation -->
-  <nav class="fixed top-0 left-0 right-0 z-50 flex items-center px-6 py-3 gap-8 bg-surface-container/75 backdrop-blur-xl rounded-full mt-spacing-edge-margin-desktop mx-auto max-w-fit border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-transform active:scale-95">
-    <div class="font-display-logo text-display-logo text-primary animate-pulse">Sketchflow</div>
-    <div class="hidden md:flex gap-6">
-      <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-base text-body-base hover:bg-white/10 hover:scale-105 transition-all duration-200" href="#features-section">Features</a>
-      <a class="text-on-surface-variant font-body-base text-body-base hover:bg-white/10 hover:scale-105 transition-all duration-200" href="https://github.com/imraan011/Excali-Draw" target="_blank" rel="noopener">GitHub</a>
-      <a class="text-on-surface-variant font-body-base text-body-base hover:bg-white/10 hover:scale-105 transition-all duration-200" href="./app/">Open Canvas</a>
+  <!-- Top Navigation (Restrained & Elegant) -->
+  <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center px-6 py-2.5 gap-8 bg-black/60 backdrop-blur-xl rounded-full border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.8)] max-w-fit w-max">
+    <div class="font-bold text-lg tracking-tight text-white">Sketchflow</div>
+    <div class="hidden md:flex gap-6 items-center">
+      <a class="text-zinc-400 font-medium text-xs hover:text-white transition-colors duration-200" href="#features-section">Features</a>
+      <a class="text-zinc-400 font-medium text-xs hover:text-white transition-colors duration-200" href="https://github.com/imraan011/Excali-Draw" target="_blank" rel="noopener">GitHub</a>
     </div>
-    <div class="flex gap-4 items-center">
-      <a href="./app/" class="bg-primary-container text-on-primary-container px-4 py-2 rounded-full font-body-base text-body-base font-bold transition-all hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-        Launch App
-      </a>
-    </div>
+    <div class="h-4 w-px bg-white/10"></div>
+    <a href="./app/" class="bg-white text-black hover:bg-zinc-200 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 hover:scale-[1.03] active:scale-[0.97]">
+      Open App
+    </a>
   </nav>
 
-  <!-- Main Content Canvas -->
-  <main class="relative min-h-screen pt-32 pb-40 overflow-hidden">
-    
-    <!-- Hero Section -->
-    <section class="relative z-10 container mx-auto px-6 text-center mb-24">
-      <div class="hero-gradient absolute inset-0 -z-10 pointer-events-none"></div>
-      <h1 class="font-display-logo text-6xl md:text-8xl font-extrabold tracking-tighter mb-6">
-        Sketchflow: <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Drawing at the Speed of Thought</span>
-      </h1>
-      <p class="text-on-surface-variant text-xl md:text-2xl font-heading-md max-w-2xl mx-auto mb-10 leading-relaxed">
-        The zero-dependency infinite canvas for creators. High-performance visualization for your next breakthrough.
-      </p>
-      <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
-        <a href="./app/" class="bg-primary text-on-primary px-10 py-5 rounded-xl font-bold text-lg hover:scale-105 transition-all duration-300 glow-primary active:scale-95 flex items-center gap-2 group justify-center w-full md:w-auto">
-          Start Drawing 
-          <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-        </a>
-        <a href="#demo-section" class="glass px-10 py-5 rounded-xl font-bold text-lg hover:bg-white/5 transition-all duration-300 active:scale-95 border border-white/10 flex items-center justify-center w-full md:w-auto">
-          View Demo
-        </a>
+  <!-- Hero Section (Massive whitespace, centered focus) -->
+  <header class="relative z-10 pt-48 pb-32 px-6 max-w-5xl mx-auto text-center flex flex-col items-center">
+    <h1 data-animate="heading" class="font-semibold text-5xl md:text-8xl tracking-tighter mb-8 leading-[1.05] text-white">
+      A canvas that never<br/>runs out of room.
+    </h1>
+    <p data-animate="fade-up" class="text-zinc-400 text-lg md:text-xl max-w-2xl mb-12 leading-relaxed font-normal">
+      An infinite canvas for sketching ideas, in your browser, with nothing to install.
+    </p>
+    <a href="./app/" data-animate="cta" class="bg-white text-black hover:bg-zinc-200 px-8 py-4 rounded-full font-semibold text-base transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg">
+      Start Drawing
+    </a>
+  </header>
+
+  <!-- Live Canvas Product frame (Apple Shot Style) -->
+  <section class="max-w-6xl mx-auto px-6 mb-48">
+    <div class="device-frame w-full aspect-[21/9] rounded-3xl overflow-hidden relative border border-white/5 p-4 md:p-8 bg-zinc-950">
+      <!-- Grid Overlay background -->
+      <div class="canvas-grid absolute inset-0 opacity-60"></div>
+      
+      <!-- Embedded Canvas Content -->
+      <div class="absolute inset-0 p-8 md:p-12 z-10">
+        <canvas id="demo-canvas" class="w-full h-full block"></canvas>
       </div>
-    </section>
 
-    <!-- Canvas Preview Area -->
-    <section id="demo-section" class="relative container mx-auto px-spacing-edge-margin-desktop mb-32">
-      <div class="glass w-full aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl relative border border-white/5">
-        <!-- Canvas Grid -->
-        <div class="canvas-grid absolute inset-0 opacity-40"></div>
-        
-        <!-- Live Rendering Canvas -->
-        <div class="absolute inset-0 p-8 md:p-12">
-          <canvas id="demo-canvas" class="w-full h-full block"></canvas>
+      <!-- Preview toolbar mockup (Clean inline SVGs) -->
+      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 p-1.5 glass rounded-2xl shadow-xl z-20">
+        <div data-animate="drop-in" class="bg-primary/10 text-primary rounded-xl p-2.5">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="m13 13 6 6"/></svg>
         </div>
-
-        <!-- Floating Toolbars in Preview -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 p-2 glass rounded-2xl shadow-2xl scale-110">
-          <div class="bg-primary/15 text-primary rounded-lg p-2 scale-110 shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer transition-all hover:scale-125">
-            <span class="material-symbols-outlined">near_me</span>
-          </div>
-          <div class="text-on-surface-variant p-2 cursor-pointer hover:bg-white/10 hover:-translate-y-2 rounded-lg transition-all">
-            <span class="material-symbols-outlined">draw</span>
-          </div>
-          <div class="text-on-surface-variant p-2 cursor-pointer hover:bg-white/10 hover:-translate-y-2 rounded-lg transition-all">
-            <span class="material-symbols-outlined">pentagon</span>
-          </div>
-          <div class="text-on-surface-variant p-2 cursor-pointer hover:bg-white/10 hover:-translate-y-2 rounded-lg transition-all">
-            <span class="material-symbols-outlined">title</span>
-          </div>
-          <div class="text-on-surface-variant p-2 cursor-pointer hover:bg-white/10 hover:-translate-y-2 rounded-lg transition-all">
-            <span class="material-symbols-outlined">image</span>
-          </div>
-          <div class="w-px h-6 bg-white/10 my-auto mx-1"></div>
-          <div class="text-on-surface-variant p-2 cursor-pointer hover:bg-white/10 hover:-translate-y-2 rounded-lg transition-all">
-            <span class="material-symbols-outlined">settings</span>
-          </div>
+        <div data-animate="drop-in" class="text-zinc-400 p-2.5 rounded-xl hover:bg-white/5 transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         </div>
-
-        <!-- Live Indicator -->
-        <div class="absolute top-6 left-6 flex items-center gap-2 glass px-3 py-1.5 rounded-full">
-          <span class="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,1)]"></span>
-          <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Live Demo</span>
+        <div data-animate="drop-in" class="text-zinc-400 p-2.5 rounded-xl hover:bg-white/5 transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        </div>
+        <div data-animate="drop-in" class="text-zinc-400 p-2.5 rounded-xl hover:bg-white/5 transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        </div>
+        <div data-animate="drop-in" class="text-zinc-400 p-2.5 rounded-xl hover:bg-white/5 transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <div class="w-px h-6 bg-white/10 my-auto mx-1"></div>
+        <div data-animate="drop-in" class="text-zinc-400 p-2.5 rounded-xl hover:bg-white/5 transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </div>
       </div>
-    </section>
 
-    <!-- Features Grid -->
-    <section id="features-section" class="container mx-auto px-6 mb-32">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <!-- Feature 1 -->
-        <div class="glass p-8 rounded-3xl hover:border-primary/50 transition-all duration-500 group">
-          <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 border border-primary/20 group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-primary text-3xl">all_out</span>
-          </div>
-          <h3 class="font-heading-md text-xl font-bold mb-3">Infinite Canvas</h3>
-          <p class="text-on-surface-variant font-body-base text-body-base leading-relaxed">
-            Break free from standard page limits. Sketch, flow, and ideate in a workspace that grows with your vision.
-          </p>
-        </div>
-
-        <!-- Feature 2 -->
-        <div class="glass p-8 rounded-3xl hover:border-primary/50 transition-all duration-500 group">
-          <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 border border-primary/20 group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-primary text-3xl">code_off</span>
-          </div>
-          <h3 class="font-heading-md text-xl font-bold mb-3">Zero Dependencies</h3>
-          <p class="text-on-surface-variant font-body-base text-body-base leading-relaxed">
-            Pure performance. A lightweight architecture that runs everywhere without the bloat. Focus on your work, not the setup.
-          </p>
-        </div>
-
-        <!-- Feature 3 -->
-        <div class="glass p-8 rounded-3xl hover:border-primary/50 transition-all duration-500 group">
-          <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6 border border-primary/20 group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-primary text-3xl">cloud_done</span>
-          </div>
-          <h3 class="font-heading-md text-xl font-bold mb-3">Autosave &amp; Export</h3>
-          <p class="text-on-surface-variant font-body-base text-body-base leading-relaxed">
-            Never lose a stroke. Real-time synchronization combined with professional JSON, transparent PNG exports, and localStorage autosave.
-          </p>
-        </div>
-
+      <!-- Live Session indicator badge -->
+      <div class="absolute top-6 left-6 flex items-center gap-2 glass px-3 py-1.5 rounded-full z-20">
+        <span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+        <span class="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Live Demo</span>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Final CTA Section -->
-    <section class="container mx-auto px-6 mb-32">
-      <div class="glass relative overflow-hidden p-12 md:p-24 rounded-3xl text-center border border-white/10 shadow-[0_0_100px_rgba(16,185,129,0.1)]">
-        <div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none"></div>
-        <h2 class="font-display-logo text-4xl md:text-5xl font-bold mb-8">Ready to visualize your next big idea?</h2>
-        <div class="flex justify-center">
-          <a href="./app/" class="bg-primary-container text-on-primary-container px-12 py-5 rounded-xl font-bold text-xl hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(16,185,129,0.3)] active:scale-95 inline-block">
-            Try Sketchflow Free
-          </a>
+  <!-- Feature Grid (Whitespace-separated open design) -->
+  <section id="features-section" class="max-w-5xl mx-auto px-6 py-16 mb-32 border-t border-white/5">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-12">
+      
+      <!-- Feature 1 -->
+      <div data-animate="fade-up" class="flex flex-col items-start">
+        <div class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center mb-6 border border-white/10 text-white">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
         </div>
+        <h3 class="text-white font-semibold text-lg mb-3">Infinite Canvas</h3>
+        <p class="text-zinc-400 text-sm leading-relaxed">
+          Sketch, flow, and ideate in a workspace that grows with your thoughts.
+        </p>
       </div>
-    </section>
 
-  </main>
+      <!-- Feature 2 -->
+      <div data-animate="fade-up" class="flex flex-col items-start">
+        <div class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center mb-6 border border-white/10 text-white">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+        </div>
+        <h3 class="text-white font-semibold text-lg mb-3">Zero Dependencies</h3>
+        <p class="text-zinc-400 text-sm leading-relaxed">
+          Runs entirely in your browser. No installs, no accounts, no tracking.
+        </p>
+      </div>
 
-  <!-- Site Footer Information -->
-  <footer class="w-full py-12 bg-surface-container-lowest border-t border-outline-variant mt-auto">
-    <div class="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
-      <div class="font-display-logo text-display-logo text-on-surface">Sketchflow</div>
-      <div class="text-on-surface-variant font-label-caps text-label-caps text-center md:text-left">
-        © 2024 Sketchflow. Built for the infinite.
+      <!-- Feature 3 -->
+      <div data-animate="fade-up" class="flex flex-col items-start">
+        <div class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center mb-6 border border-white/10 text-white">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <h3 class="text-white font-semibold text-lg mb-3">Autosave &amp; Export</h3>
+        <p class="text-zinc-400 text-sm leading-relaxed">
+          Your work is saved automatically to your device, ready to export as JSON or PNG.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Final CTA Section (Subtle overlay gradient) -->
+  <section class="max-w-5xl mx-auto px-6 mb-48">
+    <div data-animate="fade-up" class="glass relative overflow-hidden py-24 rounded-3xl text-center border border-white/5 shadow-2xl flex flex-col items-center">
+      <h2 class="text-white text-3xl md:text-5xl font-semibold tracking-tight mb-8">Ready to visualize your next big idea?</h2>
+      <a href="./app/" class="bg-white text-black hover:bg-zinc-200 px-10 py-4 rounded-full font-semibold text-base transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
+        Try Sketchflow Free
+      </a>
+    </div>
+  </section>
+
+  <!-- Site Footer (Standardized Margins) -->
+  <footer class="w-full py-12 bg-zinc-950 border-t border-white/5 mt-auto">
+    <div class="max-w-5xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="text-white font-bold text-sm tracking-tight">Sketchflow</div>
+      <div class="text-zinc-500 text-[11px] font-medium tracking-wider uppercase text-center md:text-left">
+        © 2026 Sketchflow. Built with vanilla JavaScript.
       </div>
       <div class="flex gap-6">
-        <a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="https://github.com/imraan011/Excali-Draw" target="_blank" rel="noopener">GitHub</a>
-        <a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="#">Documentation</a>
-        <a class="text-on-surface-variant font-label-caps text-label-caps hover:text-primary transition-colors" href="#">Changelog</a>
+        <a class="text-zinc-400 text-[11px] font-medium tracking-wider uppercase hover:text-white transition-colors" href="https://github.com/imraan011/Excali-Draw" target="_blank" rel="noopener">GitHub</a>
+        <a class="text-zinc-400 text-[11px] font-medium tracking-wider uppercase hover:text-white transition-colors" href="#">Documentation</a>
+        <a class="text-zinc-400 text-[11px] font-medium tracking-wider uppercase hover:text-white transition-colors" href="#">Changelog</a>
       </div>
     </div>
   </footer>
 
   <!-- Landing script loading -->
   <script type="module" src="./js/landing.js"></script>
+
+  <!-- Entry animation script (optional — safe to remove this line + the animations/ folder) -->
+  <script type="module" src="./animations/entry-animation.js"></script>
 </body>
 </html>
