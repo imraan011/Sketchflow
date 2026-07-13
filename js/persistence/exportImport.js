@@ -1,6 +1,7 @@
 // File export & import managers
 import { state } from "../core/state.js";
 import { validateSaveFile } from "./schema.js";
+import { showConfirm } from "../ui/modal.js";
 
 /**
  * Global floating notifications/alert message UI display helper function
@@ -78,7 +79,7 @@ export function importFromJSON(file) {
 
   const reader = new FileReader();
 
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     try {
       const data = JSON.parse(e.target.result);
       const validation = validateSaveFile(data);
@@ -89,9 +90,9 @@ export function importFromJSON(file) {
         return;
       }
 
-      // Overwrite overwrite confirmation prompt check
+      // Overwrite confirmation — async modal (non-blocking, no INP jank)
       if (state.shapes.length > 0) {
-        const proceed = confirm("Importing will replace your current drawing — continue?");
+        const proceed = await showConfirm("Importing will replace your current drawing — continue?");
         if (!proceed) return;
       }
 

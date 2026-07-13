@@ -11,6 +11,7 @@ import { initZoom } from "./tools/zoomHandler.js";
 import { loadFromLocalStorage } from "./persistence/localStorage.js";
 import { initAutosave } from "./persistence/autosave.js";
 import { exportAsJSON, importFromJSON } from "./persistence/exportImport.js";
+import { showConfirm } from "./ui/modal.js";
 
 // LocalStorage startup initialization load
 const loadedState = loadFromLocalStorage();
@@ -163,11 +164,11 @@ window.addEventListener("drop", (e) => {
   }
 });
 
-// Reset button action handler
+// Reset button action handler — async modal to avoid INP jank
 const resetBtn = document.getElementById("reset-btn");
 if (resetBtn) {
-  resetBtn.addEventListener("click", () => {
-    const proceed = confirm("Are you sure you want to clear the canvas completely?");
+  resetBtn.addEventListener("click", async () => {
+    const proceed = await showConfirm("Are you sure you want to clear the canvas completely? This cannot be undone.");
     if (proceed) {
       state.loadState({ shapes: [], viewport: { x: 0, y: 0, zoom: 1 } });
     }
