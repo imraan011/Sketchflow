@@ -1,15 +1,7 @@
-/**
- * Excali Draw - Entry point (main.js)
- * 
- * NOTE: ES Modules direct local files pe CORS restriction block karte hain (file://).
- * Chrome aur modern browsers standard protocols request access allow nahi karte script tag module ke liye.
- * Solution: Run this project using a local server:
- *   - run: `npx serve .` or `python -m http.server`
- *   - or use VS Code Live Server extension.
- */
-
 import { state } from "./core/state.js";
 import { initCanvas, resizeCanvas, requestRender } from "./core/canvas.js";
+import { ToolManager } from "./tools/ToolManager.js";
+import { createShapeTool } from "./tools/shapeTool.js";
 
 // Initialize canvas flow
 const canvasElement = document.getElementById("app-canvas");
@@ -19,9 +11,49 @@ if (canvasElement) {
   console.error("Critical Error: canvas element with id 'app-canvas' not found.");
 }
 
-// State changes ko subscribe karo updates coordinate coordinate / drawing clear cycles trigger karne ke liye
+// Drawing tools ko registry me store karein
+ToolManager.registerTool(createShapeTool("rectangle"));
+ToolManager.registerTool(createShapeTool("ellipse"));
+ToolManager.registerTool(createShapeTool("line"));
+ToolManager.registerTool(createShapeTool("arrow"));
+
+// Phase 2 dummy select tool placeholder register karo
+ToolManager.registerTool({
+  name: "select",
+  onPointerDown: () => {},
+  onPointerMove: () => {},
+  onPointerUp: () => {}
+});
+
+// Canvas pointer handlers hook/initialize karein
+if (canvasElement) {
+  ToolManager.init(canvasElement);
+}
+
+// Toolbar active highlights refresh handler
+function updateToolbarUI() {
+  const buttons = document.querySelectorAll("#toolbar button");
+  buttons.forEach(button => {
+    if (button.dataset.tool === state.currentTool) {
+      button.classList.add("active");
+    } else {
+      button.classList.remove("active");
+    }
+  });
+}
+
+// Toolbar buttons par click events click and update setup
+document.querySelectorAll("#toolbar button").forEach(button => {
+  button.addEventListener("click", () => {
+    const selectedTool = button.dataset.tool;
+    state.setTool(selectedTool);
+  });
+});
+
+// State changes ko subscribe karo update re-rendering aur UI sync ke liye
 state.subscribe(() => {
   requestRender();
+  updateToolbarUI();
 });
 
 // Window resize handler updates grid dynamic mapping
@@ -30,8 +62,10 @@ window.addEventListener("resize", () => {
   requestRender();
 });
 
-// Canvas screen updates initial trigger
+// Initial rendering cycle trigger aur UI refresh check
+updateToolbarUI();
 requestRender();
 
 console.log("Excali Draw initialized");
 export {};
+

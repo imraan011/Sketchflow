@@ -1,4 +1,5 @@
 import { state } from "./state.js";
+import { renderShape } from "../shapes/renderShape.js";
 
 // Canvas aur context references store karne ke liye
 let canvas = null;
@@ -94,7 +95,10 @@ export function render() {
   ctx.translate(viewport.x, viewport.y);
   ctx.scale(viewport.zoom, viewport.zoom);
 
-  // shapes.forEach(shape => drawShape(ctx, shape)); (Phase 2+)
+  // state me module dynamic shapes looping se draw karo
+  state.shapes.forEach(shape => {
+    renderShape(ctx, shape);
+  });
 
   ctx.restore();
 }

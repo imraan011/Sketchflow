@@ -8,6 +8,32 @@ export const state = {
   currentTool: "select",
   viewport: { x: 0, y: 0, zoom: 1 },
 
+  // Naya shape add karne ke liye
+  addShape(shape) {
+    this.shapes.push(shape);
+    this.notify();
+  },
+
+  // Shape details update karne ke liye
+  updateShape(id, changes) {
+    const shape = this.shapes.find(s => s.id === id);
+    if (shape) {
+      Object.assign(shape, changes);
+      this.notify();
+    }
+  },
+
+  // Shape ko list se remove karne ke liye
+  removeShape(id) {
+    this.shapes = this.shapes.filter(s => s.id !== id);
+    this.notify();
+  },
+
+  // Active drawing tool change karne ke liye
+  setTool(toolName) {
+    this.setState({ currentTool: toolName });
+  },
+
   /**
    * State ko update karne aur sabhi subscribers ko notify karne ke liye
    * @param {Partial<typeof state>} nextState 
