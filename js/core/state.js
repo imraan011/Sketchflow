@@ -7,9 +7,13 @@ export const state = {
   selectedShapeIds: [],
   currentTool: "select",
   viewport: { x: 0, y: 0, zoom: 1 },
+  undoStack: [],
+  redoStack: [],
+  clipboard: [],
 
   // Naya shape add karne ke liye
   addShape(shape) {
+    this.pushUndo();
     this.shapes.push(shape);
     this.notify();
   },
@@ -31,7 +35,9 @@ export const state = {
 
   // Shape ko list se remove karne ke liye
   removeShape(id) {
+    this.pushUndo();
     this.shapes = this.shapes.filter(s => s.id !== id);
+    this.selectedShapeIds = this.selectedShapeIds.filter(x => x !== id);
     this.notify();
   },
 
@@ -47,6 +53,7 @@ export const state = {
 
   // Selected shapes delete karne ke liye
   deleteSelected() {
+    this.pushUndo();
     this.shapes = this.shapes.filter(s => !this.selectedShapeIds.includes(s.id));
     this.setState({ selectedShapeIds: [] });
   },
@@ -63,6 +70,91 @@ export const state = {
     if (data.viewport) {
       this.viewport = { ...this.viewport, ...data.viewport };
     }
+    this.notify();
+  },
+
+  // Current shapes list clone karke history snapshot push karne ke liye
+  pushUndo() {
+    const snapshot = JSON.parse(JSON.stringify(this.shapes));
+    this.undoStack.push(snapshot);
+    this.redoStack = [];
+    if (this.undoStack.length > 50) {
+      this.undoStack.shift();
+    }
+  },
+
+  // Undo operation
+  undo() {
+    if (this.undoStack.length === 0) return;
+    const current = JSON.parse(JSON.stringify(this.shapes));
+    this.redoStack.push(current);
+
+    const prev = this.undoStack.pop();
+    this.shapes = prev;
+    this.selectedShapeIds = [];
+    this.notify();
+  },
+
+  // Redo operation
+  redo() {
+    if (this.redoStack.length === 0) return;
+    const current = JSON.parse(JSON.stringify(this.shapes));
+    this.undoStack.push(current);
+
+    const next = this.redoStack.pop();
+    this.shapes = next;
+    this.selectedShapeIds = [];
+    this.notify();
+  },
+
+  // Selected shapes details clipboard me copy karne ke liye
+  copy() {
+    if (this.selectedShapeIds.length === 0) return;
+    this.clipboard = this.selectedShapeIds
+      .map(id => this.shapes.find(s => s.id === id))
+      .filter(Boolean)
+      .map(s => JSON.parse(JSON.stringify(s)));
+  },
+
+  // Clipboard copy details offset coordinate mapping se paste karne ke liye
+  paste() {
+    if (this.clipboard.length === 0) return;
+
+    this.pushUndo();
+    const offset = 20;
+    const pastedIds = [];
+
+    this.clipboard.forEach(item => {
+      const copy = JSON.parse(JSON.stringify(item));
+      copy.id = `shape_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      if (copy.type === "pencil") {
+        copy.points = copy.points.map(p => ({
+          x: p.x + offset,
+          y: p.y + offset
+        }));
+      } else {
+        copy.x += offset;
+        copy.y += offset;
+      }
+
+      this.shapes.push(copy);
+      pastedIds.push(copy.id);
+    });
+
+    // Sub-sequent pastes chain coordinates shifting offsets update
+    this.clipboard = this.clipboard.map(item => {
+      const copy = JSON.parse(JSON.stringify(item));
+      if (copy.type === "pencil") {
+        copy.points = copy.points.map(p => ({ x: p.x + offset, y: p.y + offset }));
+      } else {
+        copy.x += offset;
+        copy.y += offset;
+      }
+      return copy;
+    });
+
+    this.selectedShapeIds = pastedIds;
     this.notify();
   },
 

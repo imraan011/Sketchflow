@@ -7,7 +7,7 @@ let isPanning = false;
 let lastPointerScreenPos = null;
 
 export const panTool = {
-  name: "pan",
+  name: "hand",
 
   onPointerDown(e) {
     isPanning = true;
@@ -41,8 +41,8 @@ export const panTool = {
 
     const canvasEl = document.getElementById("app-canvas");
     if (canvasEl) {
-      // Space button status ke base par cursor style restore karein
-      canvasEl.style.cursor = getIsSpacePressed() ? "grab" : "default";
+      // Space button status ya active hand tool ke base par cursor style restore karein
+      canvasEl.style.cursor = (state.currentTool === "hand" || getIsSpacePressed()) ? "grab" : "default";
     }
     
     requestRender();

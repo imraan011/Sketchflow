@@ -51,6 +51,22 @@ export function initKeyboard() {
       // Zoom resets to default values
       e.preventDefault();
       state.setViewport({ x: 0, y: 0, zoom: 1 });
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+      // Undo shortcut trigger mapping
+      e.preventDefault();
+      state.undo();
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+      // Redo shortcut trigger mapping
+      e.preventDefault();
+      state.redo();
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c") {
+      // Copy shortcut trigger mapping
+      e.preventDefault();
+      state.copy();
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "v") {
+      // Paste shortcut trigger mapping
+      e.preventDefault();
+      state.paste();
     }
   });
 

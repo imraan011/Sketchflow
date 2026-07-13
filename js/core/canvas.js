@@ -1,5 +1,6 @@
 import { state } from "./state.js";
 import { renderShape, renderSelectionOverlay } from "../shapes/renderShape.js";
+import { getSelectionBox } from "../tools/selectTool.js";
 
 // Canvas aur context references store karne ke liye
 let canvas = null;
@@ -106,6 +107,20 @@ export function render() {
       renderSelectionOverlay(ctx, shape);
     }
   });
+
+  // Drag selection box draw karein (multi-select border style matching premium visual colors)
+  const selBox = getSelectionBox();
+  if (selBox) {
+    ctx.strokeStyle = "rgba(74, 144, 217, 0.85)";
+    ctx.lineWidth = 1.5 / viewport.zoom;
+    ctx.setLineDash([4 / viewport.zoom, 4 / viewport.zoom]);
+    ctx.fillStyle = "rgba(74, 144, 217, 0.08)";
+    ctx.beginPath();
+    ctx.rect(selBox.x, selBox.y, selBox.width, selBox.height);
+    ctx.fill();
+    ctx.stroke();
+    ctx.setLineDash([]); // clear dash style
+  }
 
   ctx.restore();
 }

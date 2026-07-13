@@ -4,6 +4,8 @@ import { ToolManager } from "./tools/ToolManager.js";
 import { createShapeTool } from "./tools/shapeTool.js";
 import { pencilTool } from "./tools/pencilTool.js";
 import { selectTool } from "./tools/selectTool.js";
+import { panTool } from "./tools/panTool.js";
+import { eraserTool } from "./tools/eraserTool.js";
 import { initKeyboard } from "./core/keyboard.js";
 import { initZoom } from "./tools/zoomHandler.js";
 import { loadFromLocalStorage } from "./persistence/localStorage.js";
@@ -31,6 +33,8 @@ ToolManager.registerTool(createShapeTool("line"));
 ToolManager.registerTool(createShapeTool("arrow"));
 ToolManager.registerTool(pencilTool);
 ToolManager.registerTool(selectTool);
+ToolManager.registerTool(panTool);
+ToolManager.registerTool(eraserTool);
 
 // Canvas pointer handlers hook/initialize karein
 if (canvasElement) {
@@ -82,11 +86,27 @@ function updateZoomUI() {
   }
 }
 
+// Active tool cursors update sync helper
+function updateCanvasCursor() {
+  const canvasEl = document.getElementById("app-canvas");
+  if (!canvasEl) return;
+  if (state.currentTool === "hand") {
+    canvasEl.style.cursor = "grab";
+  } else if (state.currentTool === "eraser") {
+    canvasEl.style.cursor = "alias";
+  } else if (state.currentTool === "select") {
+    canvasEl.style.cursor = "default";
+  } else {
+    canvasEl.style.cursor = "crosshair";
+  }
+}
+
 // State changes ko subscribe karo update re-rendering aur UI sync ke liye
 state.subscribe(() => {
   requestRender();
   updateToolbarUI();
   updateZoomUI();
+  updateCanvasCursor();
 });
 
 // Autosave system initialize
@@ -143,6 +163,17 @@ window.addEventListener("drop", (e) => {
   }
 });
 
+// Reset button action handler
+const resetBtn = document.getElementById("reset-btn");
+if (resetBtn) {
+  resetBtn.addEventListener("click", () => {
+    const proceed = confirm("Are you sure you want to clear the canvas completely?");
+    if (proceed) {
+      state.loadState({ shapes: [], viewport: { x: 0, y: 0, zoom: 1 } });
+    }
+  });
+}
+
 // Window resize handler updates grid dynamic mapping
 window.addEventListener("resize", () => {
   resizeCanvas();
@@ -152,6 +183,7 @@ window.addEventListener("resize", () => {
 // Initial rendering cycle trigger aur UI refresh check
 updateToolbarUI();
 updateZoomUI();
+updateCanvasCursor();
 requestRender();
 
 console.log("Excali Draw initialized");

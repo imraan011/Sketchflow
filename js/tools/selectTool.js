@@ -1,17 +1,25 @@
 import { state } from "../core/state.js";
 import { screenToWorld, worldToScreen } from "../core/coordinates.js";
 import { getShapeBounds } from "../shapes/bounds.js";
-import { getShapeAtPoint } from "../shapes/hitTest.js";
+import { getShapeAtPoint, getShapesInRect } from "../shapes/hitTest.js";
 import { requestRender } from "../core/canvas.js";
 
 // Selection pointer tracking closure variables
-let activeMode = null; // 'moving' | 'resizing' | null
+let activeMode = null; // 'moving' | 'resizing' | 'multi_selecting' | null
 let grabbedHandle = null; // 'tl' | 'tr' | 'bl' | 'br' | null
 let selectedShape = null;
 
 let startWorldPos = null;
 let originalShapeState = null;
 let originalBounds = null;
+
+// Multi-select selection box coordinates (world coordinates)
+let selectionBox = null;
+let originalShapesStates = [];
+
+export function getSelectionBox() {
+  return selectionBox;
+}
 
 /**
  * Kisi point par screen coordinate overlay box handles grab detection helper function
@@ -73,40 +81,70 @@ export const selectTool = {
     const hitShape = getShapeAtPoint(state.shapes, worldPos.x, worldPos.y);
 
     if (hitShape) {
-      state.setSelection([hitShape.id]);
+      // Agar shape already selected list me nahi hai, to ise select karein
+      if (!state.selectedShapeIds.includes(hitShape.id)) {
+        state.setSelection([hitShape.id]);
+      }
+      
       activeMode = "moving";
       selectedShape = hitShape;
       originalBounds = { ...getShapeBounds(hitShape) };
       originalShapeState = JSON.parse(JSON.stringify(hitShape));
+
+      // Backup all selected shapes for potential multi-drag
+      originalShapesStates = state.selectedShapeIds.map(id => {
+        const found = state.shapes.find(s => s.id === id);
+        return {
+          id: id,
+          state: found ? JSON.parse(JSON.stringify(found)) : null
+        };
+      }).filter(item => item.state !== null);
     } else {
-      // Empty canvas area check pe deselect options trigger karein
+      // Empty canvas area check pe multi-select selection box mode trigger karein
       state.setSelection([]);
+      activeMode = "multi_selecting";
+      selectionBox = null;
+      originalShapesStates = [];
     }
 
     requestRender();
   },
 
   onPointerMove(e) {
-    if (!activeMode || !selectedShape || !startWorldPos) return;
+    if (!activeMode || !startWorldPos) return;
 
     const currentWorldPos = screenToWorld(e.clientX, e.clientY, state.viewport);
     const deltaX = currentWorldPos.x - startWorldPos.x;
     const deltaY = currentWorldPos.y - startWorldPos.y;
 
-    if (activeMode === "moving") {
-      if (selectedShape.type === "pencil") {
-        const newPoints = originalShapeState.points.map(p => ({
-          x: p.x + deltaX,
-          y: p.y + deltaY
-        }));
-        state.updateShape(selectedShape.id, { points: newPoints });
-      } else {
-        state.updateShape(selectedShape.id, {
-          x: originalShapeState.x + deltaX,
-          y: originalShapeState.y + deltaY
-        });
-      }
-    } else if (activeMode === "resizing" && grabbedHandle && originalBounds) {
+    if (activeMode === "multi_selecting") {
+      const x = Math.min(startWorldPos.x, currentWorldPos.x);
+      const y = Math.min(startWorldPos.y, currentWorldPos.y);
+      const width = Math.abs(currentWorldPos.x - startWorldPos.x);
+      const height = Math.abs(currentWorldPos.y - startWorldPos.y);
+      selectionBox = { x, y, width, height };
+
+      // Rect bounds overlapping check ke dynamic ids retrieve sync karein
+      const overlapping = getShapesInRect(state.shapes, x, y, width, height);
+      state.setSelection(overlapping.map(s => s.id));
+    } else if (activeMode === "moving" && originalShapesStates.length > 0) {
+      originalShapesStates.forEach(item => {
+        const shapeState = item.state;
+        if (!shapeState) return;
+        if (shapeState.type === "pencil") {
+          const newPoints = shapeState.points.map(p => ({
+            x: p.x + deltaX,
+            y: p.y + deltaY
+          }));
+          state.updateShape(item.id, { points: newPoints });
+        } else {
+          state.updateShape(item.id, {
+            x: shapeState.x + deltaX,
+            y: shapeState.y + deltaY
+          });
+        }
+      });
+    } else if (activeMode === "resizing" && grabbedHandle && originalBounds && selectedShape) {
       // Calculate target boundary rectangle coordinates
       let newX = originalBounds.x;
       let newY = originalBounds.y;
@@ -193,12 +231,19 @@ export const selectTool = {
   },
 
   onPointerUp(e) {
+    // Modify activity complete hone par history snap select push karein
+    if (activeMode === "moving" || activeMode === "resizing") {
+      state.pushUndo();
+    }
+
     activeMode = null;
     grabbedHandle = null;
     selectedShape = null;
     startWorldPos = null;
     originalShapeState = null;
     originalBounds = null;
+    selectionBox = null;
+    originalShapesStates = [];
     
     requestRender();
   }
