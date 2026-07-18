@@ -106,6 +106,21 @@ export function renderShape(ctx, shape) {
       break;
     }
 
+    case "text": {
+      // Text shape ko strokeColor se draw karein (default white)
+      ctx.fillStyle = shape.strokeColor || "#ffffff";
+      ctx.font = `${shape.fontSize || 20}px Outfit, system-ui, sans-serif`;
+      ctx.textBaseline = "top";
+      
+      const lines = (shape.text || "").split("\n");
+      const lineHeight = (shape.fontSize || 20) * 1.25;
+      
+      lines.forEach((line, index) => {
+        ctx.fillText(line, shape.x, shape.y + index * lineHeight);
+      });
+      break;
+    }
+
     default:
       console.warn(`Unsupported shape type encountered: ${shape.type}`);
   }

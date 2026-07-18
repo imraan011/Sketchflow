@@ -6,6 +6,7 @@ import { pencilTool } from "./tools/pencilTool.js";
 import { selectTool } from "./tools/selectTool.js";
 import { panTool } from "./tools/panTool.js";
 import { eraserTool } from "./tools/eraserTool.js";
+import { textTool } from "./tools/textTool.js";
 import { initKeyboard } from "./core/keyboard.js";
 import { initZoom } from "./tools/zoomHandler.js";
 import { loadFromLocalStorage } from "./persistence/localStorage.js";
@@ -38,6 +39,7 @@ ToolManager.registerTool(pencilTool);
 ToolManager.registerTool(selectTool);
 ToolManager.registerTool(panTool);
 ToolManager.registerTool(eraserTool);
+ToolManager.registerTool(textTool);
 
 // Canvas pointer handlers hook/initialize karein
 if (canvasElement) {
@@ -99,6 +101,8 @@ function updateCanvasCursor() {
     canvasEl.style.cursor = "alias";
   } else if (state.currentTool === "select") {
     canvasEl.style.cursor = "default";
+  } else if (state.currentTool === "text") {
+    canvasEl.style.cursor = "text";
   } else {
     canvasEl.style.cursor = "crosshair";
   }

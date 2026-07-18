@@ -110,6 +110,10 @@ export function initKeyboard() {
       else if (e.key === "6" || keyLower === "p") {
         state.setTool("pencil");
       }
+      // 7 ya T -> Text Tool ke liye shortcut
+      else if (e.key === "7" || keyLower === "t") {
+        state.setTool("text");
+      }
       // H -> Hand Tool
       else if (keyLower === "h") {
         state.setTool("hand");

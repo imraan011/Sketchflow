@@ -31,9 +31,10 @@ export function getShapeAtPoint(shapes, worldX, worldY) {
     const bounds = getShapeBounds(shape);
 
     switch (shape.type) {
+      case "text":
       case "rectangle":
       case "ellipse": {
-        // Rectangle aur Ellipse bounding box target collision area validation
+        // Rectangle, Ellipse aur Text bounding box target collision area validation
         if (
           worldX >= bounds.x &&
           worldX <= bounds.x + bounds.width &&
@@ -113,6 +114,19 @@ export function getShapeAtStroke(shapes, worldX, worldY, tolerance = 8) {
     const bounds = getShapeBounds(shape);
 
     switch (shape.type) {
+      case "text": {
+        // Text shape ke bounds me check karo with tolerance buffer
+        if (
+          worldX >= bounds.x - tolerance &&
+          worldX <= bounds.x + bounds.width + tolerance &&
+          worldY >= bounds.y - tolerance &&
+          worldY <= bounds.y + bounds.height + tolerance
+        ) {
+          return shape;
+        }
+        break;
+      }
+
       case "rectangle": {
         // Sirf 4 edges ke paas check karo (not the interior fill)
         const { x, y, width, height } = bounds;
